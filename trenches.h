@@ -9,6 +9,8 @@ struct sprite
     int x1,y1,V,timing;
     int state;
     int color;
+    int rifle;
+    int ammo;
     HDC adam;
     void draw();
     void moving();
@@ -23,6 +25,13 @@ struct shooting
     void draw();
 
 };
+struct rifle
+{
+    int x1,y1;
+    int state;
+    HDC rifle;
+    void draw();
+};
 
 struct map
 {
@@ -31,9 +40,18 @@ struct map
     void draw2();
     void one();
     void two();
+    void three();
+    void four();
     int counting;
     //void three();
     int getpixel(int x, int y);
+};
+struct comm
+{
+    int x1,y1;
+    int state;
+    HDC pic;
+    void draw();
 };
 void sprite::draw()
 {
@@ -50,57 +68,107 @@ void sprite::draw()
         if(state==5)
             txTransparentBlt(txDC(), x1, y1, 25, 60, adam, 374, 319, TX_WHITE);
         if(state==6)
-            txTransparentBlt(txDC(), x1, y1, 30, 64, adam, 370, 316, TX_WHITE);
+            txTransparentBlt(txDC(), x1, y1, 30, 64, adam, 483, 391, TX_WHITE);
         if(state==7)
-            txTransparentBlt(txDC(),x1, y1, 30, 64, adam, 407, 316, TX_WHITE);
+            txTransparentBlt(txDC(),x1, y1, 30, 64, adam, 519, 391, TX_WHITE);
         if(state==8)
-            txTransparentBlt(txDC(), x1,y1, 30, 64,adam, 443, 316, TX_WHITE);
+            txTransparentBlt(txDC(), x1,y1, 30, 64,adam, 552, 391, TX_WHITE);
         if(state==9)
-            txTransparentBlt(txDC(), x1, y1, 30, 64, adam, 479, 316, TX_WHITE);
+            txTransparentBlt(txDC(), x1, y1, 30, 64, adam, 446, 391, TX_WHITE);
         if(state==10)
-            txTransparentBlt(txDC(), x1,y1, 30, 64, adam, 515, 316, TX_WHITE);
+            txTransparentBlt(txDC(), x1,y1, 30, 64, adam, 410, 391, TX_WHITE);
         if(state==11)
-            txTransparentBlt(txDC(), x1,y1, 30, 64,adam, 551, 316, TX_WHITE);
+            txTransparentBlt(txDC(), x1,y1, 30, 64,adam, 374, 391, TX_WHITE);
+        if(state==12)
+            txTransparentBlt(txDC(), x1,y1, 60, 64,adam, 518, 252, TX_WHITE);
+        if(state==13)
+            txTransparentBlt(txDC(), x1,y1, 30, 64,adam, 448, 252, TX_WHITE);
+        if(state==14)
+            txTransparentBlt(txDC(), x1,y1, 30, 64,adam, 482, 252, TX_WHITE);
+        if(state==15)
+            txTransparentBlt(txDC(), x1,y1, 60, 64,adam, 374, 252, TX_WHITE);
 }
 void sprite::moving()
 {
+
     if(color==1)
         V=7;
     else
-        V=5;
+        V=4;
          if(GetAsyncKeyState(VK_LEFT))
         {
             x1=x1-V;
-            if(state==3)
-                if(timing==4)
-                {
-                    state=4;
-                    timing=5;
-                }
+            if(rifle==0)
+            {
+                if(state==3)
+                    if(timing==4)
+                    {
+                        state=4;
+                        timing=5;
+                    }
+                    else
+                    {
+                        state=5;
+                        timing=4;
+                    }
                 else
-                {
-                    state=5;
-                    timing=4;
-                }
+                    state=3;
+            }
             else
-                state=3;
+            {
+                if(state==9)
+                    if(timing==10)
+                    {
+                        state=10;
+                        timing=11;
+                    }
+                    else
+                    {
+                        state=11;
+                        timing=10;
+                    }
+                else
+                    state=9;
+
+            }
         }
         if(GetAsyncKeyState(VK_RIGHT))
         {
-            x1=x1+V;
-            if(state==0)
-                if(timing==1)
-                {
-                    state=1;
-                    timing=2;
-                }
+            if(rifle==0)
+            {
+                x1=x1+V;
+                if(state==0)
+                    if(timing==1)
+                    {
+                        state=1;
+                        timing=2;
+                    }
+                    else
+                    {
+                        state=2;
+                        timing=1;
+                    }
                 else
-                {
-                    state=2;
-                    timing=1;
-                }
+                    state=0;
+            }
+
             else
-                state=0;
+            {
+                x1=x1+V;
+                    if(state==6)
+                        if(timing==7)
+                        {
+                            state=7;
+                            timing=8;
+                        }
+                        else
+                        {
+                            state=8;
+                            timing=7;
+                        }
+                    else
+                        state=6;
+            }
         }
 
 }
@@ -111,6 +179,8 @@ void sprite::death()
     txSleep(700);
     x1=50;
     txSleep(300);
+    ammo=2;
+    rifle=0;
 }
 void map::draw1()
 {
@@ -122,6 +192,8 @@ void map::draw1()
 
             if(A[i][j]==1)
                 txSetFillColor(TX_BLACK);
+            if(A[i][j]==7)
+                txSetFillColor(RGB( 204,255,255));
             txRectangle(0+j*40,0+i*40,40+j*40+1,40+i*40);
         }
 }
@@ -144,6 +216,8 @@ void map::draw2()
                 txSetFillColor(TX_WHITE);
             if(A[i][j]==5)
                 txSetFillColor(RGB(153,204,204));
+            if(A[i][j]==6)
+                txSetFillColor(RGB(255,102,102));
             txRectangle(0+j*40,0+i*40,40+j*40+1,40+i*40);
         }
 }
@@ -205,6 +279,64 @@ void map::two()
             A[i][j]=B[i][j];
         }
 }
+void map::three()
+{
+    int i,j;
+    int B[20][30]= { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    3, 3, 3, 3, 3, 3, 3, 3, 3, 3,3, 3, 3, 3, 3, 3, 3, 3, 3, 3,3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+                    3, 3, 3, 3, 3, 3, 3, 3, 3, 3,3, 3, 3, 3, 3, 3, 3, 3, 3, 3,3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+                    3, 3, 3, 3, 3, 3, 3, 3, 3, 3,3, 3, 3, 3, 3, 3, 3, 3, 3, 3,3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+                    3, 3, 3, 3, 3, 3, 3, 3, 3, 3,3, 3, 3, 3, 3, 3, 3, 3, 3, 3,3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+                    3, 3, 3, 3, 3, 3, 3, 3, 3, 3,3, 3, 3, 3, 3, 3, 3, 3, 3, 3,3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+                    3, 3, 3, 3, 3, 3, 3, 3, 3, 3,3, 3, 3, 3, 3, 3, 3, 3, 3, 3,3, 3, 3, 3, 3, 3, 3, 3, 3, 3};
+    for(i=0;i<20;i++)
+        for(j=0;j<30;j++)
+        {
+            A[i][j]=B[i][j];
+        }
+}
+void map::four()
+{
+    int i,j;
+    int B[20][30]= { 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+                    7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+                    7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+                    7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+                    7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+                    7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+                    7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+                    7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+                    7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+                    7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+                    7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+                    7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+                    7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+                    7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+                    6, 6, 6, 6, 6, 6, 6, 6, 6, 6,6, 6, 6, 6, 6, 6, 6, 6, 6, 6,6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+                    6, 6, 6, 6, 6, 6, 6, 6, 6, 6,6, 6, 6, 6, 6, 6, 6, 6, 6, 6,6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+                    6, 6, 6, 6, 6, 6, 6, 6, 6, 6,6, 6, 6, 6, 6, 6, 6, 6, 6, 6,6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+                    6, 6, 6, 6, 6, 6, 6, 6, 6, 6,6, 6, 6, 6, 6, 6, 6, 6, 6, 6,6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+                    6, 6, 6, 6, 6, 6, 6, 6, 6, 6,6, 6, 6, 6, 6, 6, 6, 6, 6, 6,6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+                    6, 6, 6, 6, 6, 6, 6, 6, 6, 6,6, 6, 6, 6, 6, 6, 6, 6, 6, 6,6, 6, 6, 6, 6, 6, 6, 6, 6, 6};
+    for(i=0;i<20;i++)
+        for(j=0;j<30;j++)
+        {
+            A[i][j]=B[i][j];
+        }
+}
 int map::getpixel(int x, int y)
 {
     if(A[(y/20)][x/30]==1)
@@ -215,8 +347,21 @@ int map::getpixel(int x, int y)
 void shooting::draw()
 {
         if(state==1)
-            //txTransparentBlt(txDC(), x1, y1, 40, 40, blowup, 0, 0, TX_BLACK);
-            Win32::TransparentBlt(txDC(), x1-20 , y1-20, 40*scale, 40*scale,blowup, 0, 0, 40, 40, TX_BLACK);
-        if(state==2)
-            txTransparentBlt(txDC(), x1, y1, 40, 40, blowup, 552, 319, TX_BLACK);
+            Win32::TransparentBlt(txDC(), x1-20 , y1-20, 40*scale, 40*scale,blowup, 0, 0, 80, 80, TX_BLACK);
+        if(state==3)
+            Win32::TransparentBlt(txDC(), x1-20 , y1-20, 40*scale, 40*scale,blowup, 80, 0, 80, 80, TX_BLACK);
+
+}
+void rifle::draw()
+{
+    if(state==0)
+            txTransparentBlt(txDC(), x1, y1, 25, 60, rifle, 600, 370, TX_WHITE);
+
+}
+void comm::draw()
+{
+        if(state==0)
+            txTransparentBlt(txDC(), x1, y1, 15, 60, pic, 37, 30, TX_WHITE);
+        if(state==1)
+            txTransparentBlt(txDC(), x1-6, y1, 19, 60, pic, 76, 30, TX_WHITE);
 }
